@@ -1,0 +1,20 @@
+[project]
+name = "reception-360"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.100,<0.115",
+    "google-api-python-client>=2.196.0",
+    "google-auth>=2.52.0",
+    "google-auth-httplib2>=0.4.0",
+    "google-auth-oauthlib>=1.4.0",
+    "httpx<0.28",
+    "loguru>=0.7.3",
+    "pipecat-ai[anthropic,deepgram,elevenlabs,openai,silero,twilio]==0.0.47",
+    "pydantic>=2.8.2,<2.9",
+    "python-dotenv>=1.2.2",
+    "twilio>=9.10.9",
+    "uvicorn>=0.46.0",
+]
