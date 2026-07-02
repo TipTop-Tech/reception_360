@@ -14,6 +14,8 @@ from pipecat.serializers.twilio import TwilioFrameSerializer
 from pipecat.services.anthropic import AnthropicLLMService
 from pipecat.services.deepgram import DeepgramSTTService
 from pipecat.services.elevenlabs import ElevenLabsTTSService
+import httpx
+
 
 from zoneinfo import ZoneInfo
 
@@ -133,6 +135,7 @@ Pricing disclaimer you must always include when quoting a price: {CLINIC['pricin
 4. Once a free slot is agreed on, collect: full name (confirm spelling), phone number, and reason for visit
 5. Use book_appointment to actually create the booking
 6. Confirm the booking details back to them
+7. If a caller wants to verify their insurance coverage, use verify_insurance. You will need their member ID, payer ID, first name, and last name. Common payer IDs: Aetna = 60054. Before calling verify_insurance, always say something like "Let me check that for you, one moment" — insurance verification can take a few seconds, so let the caller know you're working on it before you call the function.
 
 === HANDLING INFORMATION QUESTIONS ===
 
@@ -195,6 +198,21 @@ TOOLS = [
             "required": ["date", "time", "patient_name"],
         },
     },
+
+    {
+    "name": "verify_insurance",
+    "description": "Verify live insurance eligibility status via Stedi. Use this when a patient asks to check if their insurance is accepted or coverage is active.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "member_id": {"type": "string", "description": "The subscriber's insurance member or policy ID number."},
+            "payer_id": {"type": "string", "description": "The unique electronic Payer ID (e.g., '60054' for Aetna)."},
+            "first_name": {"type": "string", "description": "Subscriber's first name."},
+            "last_name": {"type": "string", "description": "Subscriber's last name."}
+        },
+        "required": ["member_id", "payer_id", "first_name", "last_name"],
+    },
+},
 ]
 
 
@@ -256,9 +274,22 @@ async def run_bot(websocket_client, stream_sid):
         logger.info(f"   → result: {result}")
         await result_callback(result)
 
+    async def handle_verify_insurance(function_name, tool_call_id, args, llm, context, result_callback):
+        logger.info(f"Claude is calling verify_insurance with: {args}")
+        result = await verify_insurance_with_stedi(
+            member_id=args["member_id"],
+            payer_id=args["payer_id"],
+            first_name=args["first_name"],
+            last_name=args["last_name"]
+        )
+        logger.info(f"   → Stedi response: {result}")
+        await result_callback(result)
+
+    
     llm.register_function("check_availability", handle_check_availability)
     llm.register_function("book_appointment", handle_book_appointment)
     llm.register_function("cancel_appointment", handle_cancel_appointment)
+    llm.register_function("verify_insurance", handle_verify_insurance)
 
     messages = [{"role": "system", "content": build_system_prompt()}]
     context = OpenAILLMContext(messages, tools=TOOLS)
@@ -294,3 +325,107 @@ async def run_bot(websocket_client, stream_sid):
 
     runner = PipelineRunner(handle_sigint=False)
     await runner.run(task)
+
+PAYER_ID_MAP = {
+    "delta dental": "DDPA",
+    "cigna": "62308",
+    "metlife": "37602",
+    "aetna": "60054",
+    "guardian": "GARD1",
+    "united healthcare": "87726",
+}
+
+async def verify_insurance_with_stedi(
+    member_id: str, 
+    payer_id: str, 
+    first_name: str, 
+    last_name: str
+) -> str:
+    """
+    Verifies insurance eligibility via Stedi's real-time API.
+    Uses sandbox mode when a test API key is provided.
+    """
+    accepted_lower = [name.lower() for name in CLINIC["insurance_accepted"]]
+    
+    payer_name = next((k for k, v in PAYER_ID_MAP.items() if v == payer_id), None)
+
+    if payer_name not in accepted_lower:
+        return "I'm sorry, we are not in-network with that insurance. We do accept out-of-network patients, but coverage and costs will vary."
+        
+    url = "https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/eligibility/v3"
+    stedi_key = os.environ.get("STEDI_API_KEY", "")
+
+    if not stedi_key:
+        logger.error("STEDI_API_KEY missing from environment variables!")
+        return "Insurance verification is currently offline."
+
+    headers = {
+        "Authorization": f"Key {stedi_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "tradingPartnerServiceId": payer_id,
+        "provider": {
+            "organizationName": CLINIC["name"],
+            "npi": "1999999984"  # Test NPI 
+        },
+        "subscriber": {
+            "memberId": member_id,
+            "firstName": first_name,
+            "lastName": last_name
+        },
+        "encounter": {
+            "serviceTypeCodes": ["30","35"]  
+        }
+    }
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                json=payload,
+                headers=headers,
+                timeout=10.0
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+                benefits = data.get("benefitsInformation", [])
+
+                if benefits:
+                    copay = "not listed"
+                    deductible = "not listed"
+                    is_inactive = False
+                    DENTAL_STCS = {"35", "30"}
+
+                    for item in benefits:
+                        code = item.get("code")  # "1" Active, "6" Inactive, "B" Copay, "C" Deductible
+                        network = item.get("inPlanNetworkIndicatorCode")  # Y / N / U / W
+                        amount = item.get("benefitAmount") 
+                        stcs = set(item.get("serviceTypeCodes", []))
+
+                        if code == "6":
+                            is_inactive = True
+
+                        if code == "B" and amount is not None and network in ("Y", "W") and stcs & DENTAL_STCS:
+                            copay = f"${amount}"
+
+                        if code == "C" and amount is not None and network in ("Y", "W") and stcs & DENTAL_STCS:
+                            deductible = f"${amount}"
+
+                    if is_inactive:
+                        return "Insurance verification complete. Unfortunately, this coverage appears to be inactive. You may want to double-check the member ID."
+
+                    return f"Insurance verification complete. Your coverage is active. I see a general co-pay of {copay} and your individual deductible is {deductible}."
+
+                else:
+                    return "Insurance verification complete. Unfortunately, the system shows that this coverage is currently inactive or could not be found. You may want to double-check the member ID."
+
+            else:
+                logger.error(f"Stedi returned status {response.status_code}: {response.text}")
+                return "I wasn't able to verify insurance right now. Let me take a message for staff to follow up."
+
+    except Exception as e:
+        logger.error(f"Stedi connection error: {e}")
+        return "Error connecting to the insurance verification service."

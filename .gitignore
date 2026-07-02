@@ -1,2 +1,7 @@
 .DS_Store
 .claude/
+.env
+google_credentials.json
+google_token.json
+__pycache__/
+*.pyc
