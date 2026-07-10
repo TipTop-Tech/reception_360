@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrontDesk AI — Staff Console · Reception 360</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<style>
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+</style>
+</head>
+<body>
+<div class="page">
+<h2 class="sr-only">Staff admin console; call logs now include expandable transcripts plus caller phone and email, with views for dashboard, appointments, patients, doctors, and insurance.</h2>
+<style>
+.navitem{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;line-height:1.3;}
+.navitem:hover{background:var(--color-background-primary);}
+.navitem.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500;}
+.navitem i{font-size:18px;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 8px;border-radius:6px;font-weight:500;line-height:1.4;white-space:nowrap;}
+.b-s{background:var(--color-background-success);color:var(--color-text-success);}
+.b-w{background:var(--color-background-warning);color:var(--color-text-warning);}
+.b-d{background:var(--color-background-danger);color:var(--color-text-danger);}
+.b-i{background:var(--color-background-info);color:var(--color-text-info);}
+.b-n{background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.dtab{width:100%;border-collapse:collapse;table-layout:fixed;}
+.dtab th{text-align:left;font-size:12px;font-weight:500;color:var(--color-text-tertiary);padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.dtab td{font-size:12.5px;color:var(--color-text-primary);padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;}
+.ccell{white-space:normal;vertical-align:top;}
+.ccell .nm{font-size:12.5px;color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ccell .mt{font-size:11.5px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tbtn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--color-text-info);font-size:12px;}
+.trow td{white-space:normal;vertical-align:top;background:var(--color-background-secondary);}
+.tline{font-size:12.5px;line-height:1.65;margin:1px 0;}
+.tspk-a{color:var(--color-text-info);font-weight:500;}
+.tspk-c{color:var(--color-text-secondary);font-weight:500;}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border-radius:8px;background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.vtitle{font-size:16px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px;}
+.vsub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 14px;}
+.krow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}
+.klab{color:var(--color-text-secondary);}
+.kval{color:var(--color-text-primary);font-weight:500;}
+.daypill{display:inline-flex;align-items:center;justify-content:center;width:32px;height:26px;border-radius:6px;font-size:12px;font-weight:500;}
+.dp-on{background:var(--color-background-info);color:var(--color-text-info);}
+.dp-off{background:var(--color-background-secondary);color:var(--color-text-tertiary);}
+.mrow{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:12.5px;}
+.mrow .l{color:var(--color-text-secondary);}
+.mrow .v{color:var(--color-text-primary);text-align:right;}
+</style>
+
+<!-- ===== Reception 360 brand theme (added) ===== -->
+<style>
+/* 1. DESIGN TOKENS — these were referenced everywhere but never defined.
+      Values sampled from the brand thumbnail: navy #193946, orange #e28f59. */
+:root{
+  /* text */
+  --color-text-primary:#1b3a47;     /* ink / headings base */
+  --color-text-secondary:#5d6e76;   /* muted slate body */
+  --color-text-tertiary:#8b989e;    /* captions, table headers */
+  --color-text-success:#1f7a4d;
+  --color-text-warning:#9a6313;
+  --color-text-danger:#b23b3b;
+  --color-text-info:#c4703a;        /* brand orange, readable on light */
+  /* backgrounds */
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f3f5f7;
+  --color-background-success:#e4f3ea;
+  --color-background-warning:#f9efd9;
+  --color-background-danger:#f8e5e5;
+  --color-background-info:#fbe9db;   /* soft orange tint */
+  /* borders */
+  --color-border-secondary:#dde3e8;
+  --color-border-tertiary:#e8ebee;
+  /* radii */
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  /* brand constants */
+  --brand-navy:#193946;
+  --brand-navy-deep:#142e39;
+  --brand-orange:#e28f59;
+  --brand-mist:#ccd4df;
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+
+/* 2. PAGE SHELL — full-screen app: fills the whole browser viewport */
+*{box-sizing:border-box;}
+html,body{height:100%;max-width:100%;overflow:hidden;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  background:var(--brand-navy-deep);
+  color:var(--color-text-primary);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  line-height:1.45;
+}
+.page{
+  height:100vh;
+  height:100dvh;
+  width:100%;
+}
+.app{
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  max-width:none!important;
+  display:flex;
+  flex-direction:column;
+  border:none!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.topbar{flex:0 0 auto;}
+.appbody{flex:1 1 auto;min-height:0;}     /* row fills height below the top bar */
+.sidebar{min-height:0;}                    /* sidebar stretches full height   */
+.content{overflow:auto;}                   /* only the content scrolls         */
+
+/* 3. TYPOGRAPHY — display serif for headings, sans for everything else.
+      This is the "headings and text are different" separation. */
+.brandname{font-family:var(--font-display);font-weight:600;letter-spacing:.1px;}
+.vtitle{
+  font-family:var(--font-display);
+  font-size:21px;
+  font-weight:600;
+  letter-spacing:-.2px;
+  color:var(--brand-navy);
+  margin:0 0 3px;
+}
+.vsub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 16px;}
+/* section sub-heads ("Recent calls" etc.) */
+.view p[style*="font-weight:500"]{letter-spacing:.1px;}
+
+/* 4. TOP BAR — navy chrome. Re-scope tokens so the existing inline
+      var(--…) references resolve to dark-surface-appropriate colors. */
+.topbar{
+  background:var(--brand-navy);
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+  --color-text-primary:#ffffff;
+  --color-text-secondary:#cdd6dd;
+  --color-text-tertiary:#9fb2bc;
+  --color-border-tertiary:rgba(255,255,255,.18);
+  --color-background-info:rgba(226,143,89,.20);  /* logo tile */
+  --color-text-info:var(--brand-orange);
+  --color-background-secondary:var(--brand-orange); /* user avatar */
+}
+.topbar [style*="border-radius:50%"]{color:#fff!important;font-weight:600;}
+
+/* 5. SIDEBAR — navy chrome with an orange active indicator */
+.sidebar{
+  --color-background-secondary:var(--brand-navy-deep);
+  --color-border-tertiary:rgba(255,255,255,.10);
+  --color-text-secondary:#c2cdd4;
+  --color-text-primary:#ffffff;
+  --color-background-primary:rgba(255,255,255,.07); /* hover */
+}
+.sidebar .navitem{transition:background .12s ease;}
+.sidebar .navitem.active{
+  background:rgba(226,143,89,.16);
+  color:#fff;
+  box-shadow:inset 3px 0 0 var(--brand-orange);
+}
+.sidebar .navitem.active i{color:var(--brand-orange);}
+
+/* 6. KPI CARDS — defined cards, serif numbers echoing the "360" wordmark */
+.kpis>div{
+  background:#fff!important;
+  border:1px solid var(--color-border-tertiary);
+  box-shadow:0 1px 2px rgba(20,46,57,.04);
+}
+.kpis>div>div:first-child{
+  font-size:11px!important;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:var(--color-text-tertiary)!important;
+}
+.kpis>div>div:last-child{
+  font-family:var(--font-display);
+  font-weight:600;
+  color:var(--brand-navy)!important;
+  margin-top:4px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* 7. TABLE & ALIGNMENT POLISH */
+.dtab th{text-transform:uppercase;letter-spacing:.5px;font-size:10.5px;}
+.dtab tbody tr:hover td{background:#fafbfc;}
+.dtab td{vertical-align:middle;}
+.ccell{vertical-align:middle;}
+.badge{line-height:1.2;}
+.app i.ti{vertical-align:middle;}
+
+/* 8. RESPONSIVE — fits any screen, no horizontal overflow */
+
+/* Card grids carry hard min-widths inline (300px / 240px) that overflow a
+   phone. Below the laptop range, let them flow to fewer/one column. */
+@media (max-width:1024px){
+  .view div[style*="minmax(300px"]{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))!important;}
+}
+@media (max-width:760px){
+  .view div[style*="minmax(300px"],
+  .view div[style*="minmax(240px"],
+  .view div[style*="minmax(180px"]{grid-template-columns:1fr!important;}
+}
+
+/* Tablet & phone: tighten chrome */
+@media (max-width:720px){
+  .page{padding:12px;}
+  .sidebar{width:62px!important;}
+  .sidebar .navitem{justify-content:center;font-size:0!important;gap:0!important;}
+  .sidebar .navitem i{font-size:19px!important;}
+  .topbar [style*="min-width:130px"]{display:none!important;}
+  .vtitle{font-size:19px;}
+}
+
+/* Small phones: tighten the content padding so tables breathe */
+@media (max-width:560px){
+  .content{padding:14px 12px!important;}
+  .topbar{padding-left:12px!important;padding-right:12px!important;}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+
+<div class="app" style="border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);">
+
+  <div class="topbar" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:0.5px solid var(--color-border-tertiary);">
+    <div style="width:28px;height:28px;border-radius:var(--border-radius-md);background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;"><i class="ti ti-headset" style="font-size:17px;" aria-hidden="true"></i></div>
+    <div style="line-height:1.15;">
+      <div class="brandname" style="font-size:13.5px;font-weight:500;color:var(--color-text-primary);">FrontDesk AI</div>
+      <div style="font-size:11.5px;color:var(--color-text-tertiary);">Riverside Family Health</div>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:130px;"><i class="ti ti-search" style="font-size:15px;" aria-hidden="true"></i>Search patients…</div>
+    <i class="ti ti-bell" style="font-size:18px;color:var(--color-text-secondary);" aria-hidden="true"></i>
+    <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-secondary);color:var(--color-text-secondary);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:500;">JL</div>
+  </div>
+
+  <div class="appbody" style="display:flex;">
+    <div class="sidebar" style="width:166px;flex-shrink:0;background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:12px 10px;display:flex;flex-direction:column;gap:3px;">
+      <div class="navitem active" data-view="dashboard"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+      <div class="navitem" data-view="calls"><i class="ti ti-phone" aria-hidden="true"></i>Call logs</div>
+      <div class="navitem" data-view="appts"><i class="ti ti-calendar" aria-hidden="true"></i>Appointments</div>
+      <div class="navitem" data-view="patients"><i class="ti ti-users" aria-hidden="true"></i>Patients</div>
+      <div class="navitem" data-view="doctors"><i class="ti ti-stethoscope" aria-hidden="true"></i>Doctors</div>
+      <div class="navitem" data-view="insurance"><i class="ti ti-shield" aria-hidden="true"></i>Insurance</div>
+      <div style="flex:1;"></div>
+      <div class="navitem" data-view="dashboard"><i class="ti ti-logout" aria-hidden="true"></i>Sign out</div>
+    </div>
+
+    <div class="content" style="flex:1;min-width:0;padding:16px 18px;">
+
+      <div class="view" id="v-dashboard">
+        <p class="vtitle">Dashboard</p>
+        <p class="vsub">Good morning, Jordan · Tuesday, June 16 — the front desk at a glance.</p>
+        <div class="kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px;">
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Calls today</div><div style="font-size:24px;font-weight:500;">42</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Appointments</div><div style="font-size:24px;font-weight:500;">28</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">No-show rate</div><div style="font-size:24px;font-weight:500;">6.2%</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Eligibility verified</div><div style="font-size:24px;font-weight:500;">94%</div></div>
+        </div>
+        <p style="font-size:13px;font-weight:500;margin:0 0 8px;">Recent calls</p>
+        <table class="dtab">
+          <colgroup><col style="width:16%"><col style="width:38%"><col style="width:24%"><col style="width:22%"></colgroup>
+          <thead><tr><th>Time</th><th>Caller</th><th>Outcome</th><th>Duration</th></tr></thead>
+          <tbody>
+            <tr><td>9:42a</td><td class="ccell"><div class="nm">Maria Alvarez</div><div class="mt">(201) 555-0148</div></td><td><span class="badge b-s">Booked</span></td><td>3:12</td></tr>
+            <tr><td>9:15a</td><td class="ccell"><div class="nm">Tom Becker</div><div class="mt">(973) 555-0210</div></td><td><span class="badge b-w">Transferred</span></td><td>1:48</td></tr>
+            <tr><td>8:53a</td><td class="ccell"><div class="nm">Unknown caller</div><div class="mt">(862) 555-0177</div></td><td><span class="badge b-n">Voicemail</span></td><td>0:22</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="view" id="v-calls" style="display:none;">
+        <p class="vtitle">Call logs</p>
+        <p class="vsub">Caller contact, outcome, and full transcript — open the document icon on any row.</p>
+        <table class="dtab">
+          <colgroup><col style="width:10%"><col style="width:30%"><col style="width:16%"><col style="width:8%"><col style="width:27%"><col style="width:9%"></colgroup>
+          <thead><tr><th>Time</th><th>Caller</th><th>Outcome</th><th>Len</th><th>Result</th><th style="text-align:center;"><i class="ti ti-file-text" aria-label="Transcript"></i></th></tr></thead>
+          <tbody>
+            <tr><td>9:42a</td><td class="ccell"><div class="nm">Maria Alvarez</div><div class="mt">(201) 555-0148</div><div class="mt">m.alvarez@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>3:12</td><td>Jun 18, 10:30 · Dr. Patel</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · Thanks for calling Riverside Family Health, how can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I'd like to book an appointment — I've had a cough for about two weeks.</div><div class="tline"><span class="tspk-a">Agent</span> · I can help with that. Are you an existing patient?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, Maria Alvarez.</div><div class="tline"><span class="tspk-a">Agent</span> · Dr. Patel has an opening June 18 at 10:30 — does that work?</div><div class="tline"><span class="tspk-c">Caller</span> · That's perfect.</div><div class="tline"><span class="tspk-a">Agent</span> · Booked. I'll text a secure link so you can add your insurance card.</div></td></tr>
+
+            <tr><td>9:15a</td><td class="ccell"><div class="nm">Tom Becker</div><div class="mt">(973) 555-0210</div></td><td><span class="badge b-w">Transferred</span></td><td>1:48</td><td>To front desk</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help today?</div><div class="tline"><span class="tspk-c">Caller</span> · I have a question about my last bill.</div><div class="tline"><span class="tspk-a">Agent</span> · Billing is handled by our front desk — let me transfer you now.</div><div class="tline"><span class="tspk-c">Caller</span> · Okay, thank you.</div></td></tr>
+
+            <tr><td>8:53a</td><td class="ccell"><div class="nm">Unknown caller</div><div class="mt">(862) 555-0177</div></td><td><span class="badge b-n">Voicemail</span></td><td>0:22</td><td>—</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · You've reached Riverside Family Health after hours. Please leave a message.</div><div class="tline"><span class="tspk-c">Caller</span> · Hi, I need to move my appointment next week — please call me back. (22s)</div></td></tr>
+
+            <tr><td>8:30a</td><td class="ccell"><div class="nm">Dana Wu</div><div class="mt">(201) 555-0263</div><div class="mt">d.wu@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>2:41</td><td>Jun 19, 14:00 · Dr. Kim</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I need to see a dermatologist about a rash.</div><div class="tline"><span class="tspk-a">Agent</span> · Dr. Kim has June 19 at 2:00 PM available — shall I book it?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, let's do that.</div><div class="tline"><span class="tspk-a">Agent</span> · Booked, you're all set.</div></td></tr>
+
+            <tr><td>8:11a</td><td class="ccell"><div class="nm">Raj Mehta</div><div class="mt">(908) 555-0319</div></td><td><span class="badge b-i">Rescheduled</span></td><td>1:55</td><td>Jun 20 → Jun 25</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I need to move my June 20 appointment.</div><div class="tline"><span class="tspk-a">Agent</span> · I can move it to June 25 at the same time — does that work?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes please.</div><div class="tline"><span class="tspk-a">Agent</span> · Done — rescheduled to June 25.</div></td></tr>
+
+            <tr><td>7:58a</td><td class="ccell"><div class="nm">Helen Cho</div><div class="mt">(551) 555-0288</div><div class="mt">h.cho@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>4:03</td><td>Jun 17, 09:15 · Dr. Osei</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
+            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help today?</div><div class="tline"><span class="tspk-c">Caller</span> · I'd like a cardiology follow-up with Dr. Osei.</div><div class="tline"><span class="tspk-a">Agent</span> · She has June 17 at 9:15 AM. I'll note this needs a referral on file — do you have one?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, from my primary care doctor.</div><div class="tline"><span class="tspk-a">Agent</span> · Great — booked for June 17 at 9:15.</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="view" id="v-appts" style="display:none;">
+        <p class="vtitle">Appointments</p>
+        <p class="vsub">Today's schedule · June 16 — insurance status flags anything to chase before check-in.</p>
+        <table class="dtab">
+          <colgroup><col style="width:12%"><col style="width:22%"><col style="width:18%"><col style="width:18%"><col style="width:16%"><col style="width:14%"></colgroup>
+          <thead><tr><th>Time</th><th>Patient</th><th>Provider</th><th>Type</th><th>Insurance</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>9:00</td><td>Lily Tran</td><td>Dr. Patel</td><td>New patient</td><td><span class="badge b-s">Verified</span></td><td><span class="badge b-s">Checked in</span></td></tr>
+            <tr><td>9:30</td><td>Omar Said</td><td>Dr. Kim</td><td>Follow-up</td><td><span class="badge b-s">Verified</span></td><td><span class="badge b-i">Confirmed</span></td></tr>
+            <tr><td>10:00</td><td>Grace Bell</td><td>Dr. Patel</td><td>Sick visit</td><td><span class="badge b-w">Pending</span></td><td><span class="badge b-i">Confirmed</span></td></tr>
+            <tr><td>10:30</td><td>Maria Alvarez</td><td>Dr. Patel</td><td>New patient</td><td><span class="badge b-s">Verified</span></td><td><span class="badge b-i">Confirmed</span></td></tr>
+            <tr><td>11:00</td><td>Paul Reyes</td><td>Dr. Osei</td><td>Follow-up</td><td><span class="badge b-d">Not on file</span></td><td><span class="badge b-d">No-show</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="view" id="v-patients" style="display:none;">
+        <p class="vtitle">Patients</p>
+        <p class="vsub">Patient record, insurance, and intake captured by the AI agent.</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:15px;">MA</div>
+          <div style="line-height:1.3;">
+            <div style="font-size:15px;font-weight:500;">Maria Alvarez</div>
+            <div style="font-size:12.5px;color:var(--color-text-secondary);">DOB Mar 14, 1989 (37) · MRN RFH-0098231 · (201) 555-0148</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;">
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:13px;font-weight:500;">Insurance</span><span class="badge b-s"><i class="ti ti-check" style="font-size:13px;" aria-hidden="true"></i>In-network</span></div>
+            <div class="krow"><span class="klab">Payer</span><span class="kval">Aetna · PPO</span></div>
+            <div class="krow"><span class="klab">Member ID</span><span class="kval">W•••••3829</span></div>
+            <div class="krow"><span class="klab">Group</span><span class="kval">4471</span></div>
+            <div class="krow" style="border-bottom:none;"><span class="klab">Eligibility</span><span class="badge b-s">Active · verified today</span></div>
+          </div>
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;">
+            <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Reason for visit &amp; symptoms</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;">
+              <span class="chip">Persistent cough</span>
+              <span class="chip">Fatigue · 2 wks</span>
+              <span class="chip">Low-grade fever</span>
+              <span class="chip">Shortness of breath</span>
+            </div>
+            <div style="font-size:12.5px;color:var(--color-text-secondary);margin-top:11px;line-height:1.6;">Intake (captured by AI on Jun 16): symptoms began ~2 weeks ago, worse at night. No known allergies. Non-smoker.</div>
+          </div>
+        </div>
+
+        <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;margin-top:14px;">
+          <div style="font-size:13px;font-weight:500;margin-bottom:6px;">Visit history</div>
+          <table class="dtab">
+            <colgroup><col style="width:26%"><col style="width:26%"><col style="width:24%"><col style="width:24%"></colgroup>
+            <thead><tr><th>Date</th><th>Provider</th><th>Specialty</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>May 2, 2026</td><td>Dr. R. Patel</td><td>Primary care</td><td>Annual physical</td></tr>
+              <tr><td>Feb 18, 2026</td><td>Dr. S. Kim</td><td>Dermatology</td><td>Skin rash</td></tr>
+              <tr><td>Nov 9, 2025</td><td>Dr. R. Patel</td><td>Primary care</td><td>Flu symptoms</td></tr>
+              <tr><td>Aug 21, 2025</td><td>Dr. L. Osei</td><td>Cardiology</td><td>BP follow-up</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="view" id="v-doctors" style="display:none;">
+        <p class="vtitle">Doctors</p>
+        <p class="vsub">Providers at this location — specialization, weekly availability, and next open slot.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;">
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;">RP</div>
+              <div style="flex:1;min-width:0;line-height:1.3;"><div style="font-size:14px;font-weight:500;">Dr. Rachel Patel</div><div style="font-size:12.5px;color:var(--color-text-secondary);">Primary care</div></div>
+              <span class="badge b-s">Accepting</span>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Available</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+              <span class="daypill dp-on">Mo</span><span class="daypill dp-on">Tu</span><span class="daypill dp-on">We</span><span class="daypill dp-off">Th</span><span class="daypill dp-on">Fr</span><span class="daypill dp-off">Sa</span><span class="daypill dp-off">Su</span>
+            </div>
+            <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;">
+              <div class="mrow"><span class="l">Languages</span><span class="v">English, Hindi</span></div>
+              <div class="mrow"><span class="l">Next available</span><span class="v">Jun 17, 9:15a</span></div>
+              <div class="mrow"><span class="l">Visit types</span><span class="v">New patient, follow-up, sick visit</span></div>
+            </div>
+          </div>
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;">SK</div>
+              <div style="flex:1;min-width:0;line-height:1.3;"><div style="font-size:14px;font-weight:500;">Dr. Steven Kim</div><div style="font-size:12.5px;color:var(--color-text-secondary);">Dermatology</div></div>
+              <span class="badge b-s">Accepting</span>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Available</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+              <span class="daypill dp-on">Mo</span><span class="daypill dp-off">Tu</span><span class="daypill dp-off">We</span><span class="daypill dp-on">Th</span><span class="daypill dp-on">Fr</span><span class="daypill dp-off">Sa</span><span class="daypill dp-off">Su</span>
+            </div>
+            <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;">
+              <div class="mrow"><span class="l">Languages</span><span class="v">English, Korean</span></div>
+              <div class="mrow"><span class="l">Next available</span><span class="v">Jun 19, 2:00p</span></div>
+              <div class="mrow"><span class="l">Visit types</span><span class="v">Consults, procedures</span></div>
+            </div>
+          </div>
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;">LO</div>
+              <div style="flex:1;min-width:0;line-height:1.3;"><div style="font-size:14px;font-weight:500;">Dr. Lena Osei</div><div style="font-size:12.5px;color:var(--color-text-secondary);">Cardiology</div></div>
+              <span class="badge b-w">Waitlist</span>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Available</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+              <span class="daypill dp-off">Mo</span><span class="daypill dp-on">Tu</span><span class="daypill dp-on">We</span><span class="daypill dp-off">Th</span><span class="daypill dp-off">Fr</span><span class="daypill dp-off">Sa</span><span class="daypill dp-off">Su</span>
+            </div>
+            <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;">
+              <div class="mrow"><span class="l">Languages</span><span class="v">English, French</span></div>
+              <div class="mrow"><span class="l">Next available</span><span class="v">Jun 25, 10:30a</span></div>
+              <div class="mrow"><span class="l">Visit types</span><span class="v">Follow-up, BP check</span></div>
+            </div>
+          </div>
+
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;">
+            <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px;">MN</div>
+              <div style="flex:1;min-width:0;line-height:1.3;"><div style="font-size:14px;font-weight:500;">Dr. Minh Nguyen</div><div style="font-size:12.5px;color:var(--color-text-secondary);">Pediatrics</div></div>
+              <span class="badge b-s">Accepting</span>
+            </div>
+            <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Available</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+              <span class="daypill dp-on">Mo</span><span class="daypill dp-on">Tu</span><span class="daypill dp-on">We</span><span class="daypill dp-on">Th</span><span class="daypill dp-on">Fr</span><span class="daypill dp-off">Sa</span><span class="daypill dp-off">Su</span>
+            </div>
+            <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:8px;">
+              <div class="mrow"><span class="l">Languages</span><span class="v">English, Vietnamese</span></div>
+              <div class="mrow"><span class="l">Next available</span><span class="v">Today, 3:30p</span></div>
+              <div class="mrow"><span class="l">Visit types</span><span class="v">Well-child, sick visit, vaccines</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="view" id="v-insurance" style="display:none;">
+        <p class="vtitle">Insurance</p>
+        <p class="vsub">Accepted plans — payers this clinic is in-network with; the AI agent checks against this when booking.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">Aetna</span><span class="badge b-s">In-network</span></div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">Cigna</span><span class="badge b-s">In-network</span></div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">UnitedHealthcare</span><span class="badge b-s">In-network</span></div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">Blue Cross Blue Shield</span><span class="badge b-s">In-network</span></div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">Medicare</span><span class="badge b-s">Accepted</span></div>
+          <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:13px;">Medicaid</span><span class="badge b-w">Limited</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var items=[].slice.call(document.querySelectorAll('.navitem[data-view]'));
+  var vmap={dashboard:'v-dashboard',calls:'v-calls',appts:'v-appts',patients:'v-patients',doctors:'v-doctors',insurance:'v-insurance'};
+  function show(v){
+    for(var k in vmap){var el=document.getElementById(vmap[k]); if(el) el.style.display=(k===v)?'block':'none';}
+    items.forEach(function(i){i.classList.toggle('active', i.dataset.view===v);});
+  }
+  items.forEach(function(i){i.addEventListener('click',function(){show(i.dataset.view);});});
+  show('dashboard');
+  var tbtns=[].slice.call(document.querySelectorAll('.tbtn'));
+  tbtns.forEach(function(b){b.addEventListener('click',function(){
+    var tr=b.closest('tr'); var d=tr.nextElementSibling;
+    if(d&&d.classList.contains('trow')){d.style.display=(d.style.display==='table-row')?'none':'table-row';}
+  });});
+})();
+</script></div>
+</body>
+</html>
