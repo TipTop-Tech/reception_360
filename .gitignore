@@ -4,4 +4,5 @@
 google_credentials.json
 google_token.json
 __pycache__/
-*.pyc.venv/
+*.pyc
+.venv/
