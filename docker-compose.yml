@@ -1,0 +1,14 @@
+services:
+  reception360-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reception360-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    # If your app needs a specific timezone (you use America/New_York in bot.py):
+    environment:
+      - TZ=America/New_York
