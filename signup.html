@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FrontDesk AI — Sign in</title>
+  <title>Reception 360 — Sign up</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <style>
-
     :root {
       --color-background-primary: #ffffff;
       --color-background-secondary: #f4f5f7;
@@ -49,7 +48,7 @@
       overflow: hidden;
     }
 
-    /* ── Header */
+    /* ── Header ── */
     .card-header {
       display: flex;
       align-items: center;
@@ -169,21 +168,59 @@
       box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
     }
 
-    /* ── Error message ── */
-    .error-msg {
+    /* ── Password Requirements List ── */
+    .requirements {
+      margin-top: 6px;
+      margin-bottom: 14px;
+      font-size: 11.5px;
+      color: var(--color-text-secondary);
+      list-style: none;
+      padding-left: 2px;
+    }
+
+    .requirements li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      color: var(--color-text-tertiary);
+    }
+
+    .requirements li i {
+      font-size: 12px;
+    }
+
+    .requirements li.valid {
+      color: var(--color-text-success);
+    }
+
+    .requirements li.valid i::before {
+      content: "\ea5e"; /* Tabler Check icon */
+    }
+
+    /* ── Error & Success message ── */
+    .message-box {
       display: none;
       font-size: 12px;
-      color: var(--color-text-danger);
-      background: var(--color-background-danger);
       border-radius: var(--border-radius-sm);
       padding: 8px 10px;
       margin-bottom: 14px;
     }
 
-    .error-msg.visible { display: block; }
+    .message-box.error {
+      display: block;
+      color: var(--color-text-danger);
+      background: var(--color-background-danger);
+    }
 
-    /* ── Sign in button ── */
-    .btn-signin {
+    .message-box.success {
+      display: block;
+      color: var(--color-text-success);
+      background: var(--color-background-success);
+    }
+
+    /* ── Buttons ── */
+    .btn-signup {
       width: 100%;
       padding: 9px;
       background: var(--color-accent);
@@ -196,8 +233,18 @@
       transition: opacity 0.12s;
     }
 
-    .btn-signin:hover { opacity: 0.9; }
-    .btn-signin:active { opacity: 0.8; }
+    .btn-signup:hover { opacity: 0.9; }
+    
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--color-text-info);
+      text-decoration: none;
+    }
+    
+    .login-link:hover { text-decoration: underline; }
 
     /* ── Footer ── */
     .card-footer {
@@ -224,11 +271,11 @@
 
   <!-- Body -->
   <div class="card-body">
-    <p class="heading">Sign in</p>
-    <p class="subheading">Choose your role and enter your credentials.</p>
+    <p class="heading">Create Account</p>
+    <p class="subheading">Set up your credentials to access the console.</p>
 
     <!-- Role selector -->
-    <span class="role-label">I am a…</span>
+    <span class="role-label">I am registering as…</span>
     <div class="role-grid">
       <button class="role-btn" data-role="admin" onclick="selectRole(this)">
         <i class="ti ti-shield-check"></i> Admin
@@ -258,20 +305,29 @@
       <label for="password">Password</label>
       <div class="input-wrap">
         <i class="ti ti-lock"></i>
-        <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <input id="password" type="password" placeholder="••••••••" autocomplete="new-password" oninput="validatePassword()" />
       </div>
     </div>
 
-    <!-- Error -->
-    <div class="error-msg" id="error-msg">Please select a role, enter your email and password.</div>
+    <!-- Password Requirements Tracker -->
+    <ul class="requirements">
+      <li id="req-length"><i class="ti ti-circle-x"></i> At least 7 characters long</li>
+      <li id="req-letter"><i class="ti ti-circle-x"></i> Includes at least one letter</li>
+      <li id="req-number"><i class="ti ti-circle-x"></i> Includes at least one number</li>
+      <li id="req-capital"><i class="ti ti-circle-x"></i> Includes one capital (uppercase) letter</li>
+    </ul>
+
+    <!-- Messages -->
+    <div class="message-box" id="message-box"></div>
 
     <!-- Submit -->
-    <button class="btn-signin" onclick="handleLogin()">Sign in</button>
-    <a href="signup.html" style="display: block; text-align: center; margin-top: 14px; font-size: 12px; color: var(--color-text-info); text-decoration: none;">Don't have an account? Sign up</a>
+    <button class="btn-signup" onclick="handleSignup()">Sign up</button>
+    
+    <a href="login.html" class="login-link">Already have an account? Sign in</a>
   </div>
 
   <!-- Footer -->
-  <div class="card-footer">FrontDesk AI · staff access only</div>
+  <div class="card-footer">FrontDesk AI · staff registration</div>
 
 </div>
 
@@ -284,50 +340,99 @@
     selectedRole = btn.dataset.role;
   }
 
-  function handleLogin() {
+  // Live Password Checklist validation
+  function validatePassword() {
+    const password = document.getElementById('password').value;
+    
+    const conditions = {
+      length: password.length >= 7,
+      letter: /[a-zA-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      capital: /[A-Z]/.test(password)
+    };
+
+    updateRequirementUI('req-length', conditions.length);
+    updateRequirementUI('req-letter', conditions.letter);
+    updateRequirementUI('req-number', conditions.number);
+    updateRequirementUI('req-capital', conditions.capital);
+
+    return conditions.length && conditions.letter && conditions.number && conditions.capital;
+  }
+
+  function updateRequirementUI(elementId, isValid) {
+    const element = document.getElementById(elementId);
+    const icon = element.querySelector('i');
+    
+    if (isValid) {
+      element.classList.add('valid');
+      icon.className = 'ti ti-checkbox';
+    } else {
+      element.classList.remove('valid');
+      icon.className = 'ti ti-circle-x';
+    }
+  }
+
+  function handleSignup() {
     const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const errorEl = document.getElementById('error-msg');
+    const password = document.getElementById('password').value;
+    const msgBox = document.getElementById('message-box');
 
-    // Basic validation
+    // 1. Check if all basic fields are filled
     if (!selectedRole || !email || !password) {
-      errorEl.textContent = 'Please select a role and fill in all fields.';
-      errorEl.classList.add('visible');
+      showMessage('Please select a role and fill in all fields.', 'error');
       return;
     }
 
+    // 2. Email format validation
     if (!email.includes('@')) {
-      errorEl.textContent = 'Please enter a valid email address.';
-      errorEl.classList.add('visible');
+      showMessage('Please enter a valid email address.', 'error');
       return;
     }
 
-    const database = JSON.parse(localStorage.getItem('users')) || [];
-
-    // Look for a user that matches the exact email, password, AND role
-    const matchedUser = database.find(user => 
-      user.email.toLowerCase() === email.toLowerCase() && 
-      user.password === password && 
-      user.role === selectedRole
-    );
-
-    // If no match is found, block them!
-    if (!matchedUser) {
-      errorEl.textContent = 'Invalid credentials or incorrect role selected.';
-      errorEl.classList.add('visible');
+    // 3. Strict password rules validation
+    if (!validatePassword()) {
+      showMessage('Please make sure your password meets all requirements.', 'error');
       return;
     }
 
-    errorEl.classList.remove('visible');
+    // --- Local Database Simulation via localStorage ---
+    // Get existing users or start a fresh array
+    let database = JSON.parse(localStorage.getItem('users')) || [];
 
-    // For now redirect everyone to the dashboard
-    // Later each role can go to its own page
-    window.location.href = 'staff_admin_console_dashboard_3.html';
+    // Check if the email is already registered
+    const userExists = database.some(user => user.email.toLowerCase() === email.toLowerCase());
+    if (userExists) {
+      showMessage('An account with this email already exists.', 'error');
+      return;
+    }
+
+    // Add new user to our simulation database
+    database.push({
+      role: selectedRole,
+      email: email,
+      password: password
+    });
+
+    // Save updated database back to localStorage
+    localStorage.setItem('users', JSON.stringify(database));
+
+    showMessage('Account created successfully! Redirecting...', 'success');
+
+    // Redirect to login page after 1.5 seconds
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1500);
+  }
+
+  function showMessage(text, type) {
+    const msgBox = document.getElementById('message-box');
+    msgBox.textContent = text;
+    msgBox.className = `message-box ${type}`;
   }
 
   // Allow pressing Enter to submit
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
+    if (e.key === 'Enter') handleSignup();
   });
 </script>
 
