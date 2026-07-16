@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reception 360 — Sign up</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f4f5f7;
+      --color-background-info: #eff6ff;
+      --color-background-success: #f0fdf4;
+      --color-background-danger: #fef2f2;
+      --color-text-primary: #111827;
+      --color-text-secondary: #6b7280;
+      --color-text-tertiary: #9ca3af;
+      --color-text-info: #2563eb;
+      --color-text-success: #16a34a;
+      --color-text-danger: #dc2626;
+      --color-border-primary: #e5e7eb;
+      --color-border-secondary: #d1d5db;
+      --color-border-tertiary: #f3f4f6;
+      --color-accent: #2563eb;
+      --border-radius-sm: 6px;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--color-background-secondary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-primary);
+      border-radius: var(--border-radius-lg);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 0.5px solid var(--color-border-primary);
+    }
+
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--border-radius-md);
+      background: var(--color-background-info);
+      color: var(--color-text-info);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon i { font-size: 17px; }
+
+    .logo-text { line-height: 1.2; }
+    .logo-text .name { font-size: 13.5px; font-weight: 500; color: var(--color-text-primary); }
+    .logo-text .sub { font-size: 11.5px; color: var(--color-text-tertiary); }
+
+    /* ── Body ── */
+    .card-body { padding: 24px 20px 20px; }
+
+    .heading { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+    .subheading { font-size: 12.5px; color: var(--color-text-secondary); margin-bottom: 20px; }
+
+    /* ── Role selector ── */
+    .role-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .role-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 11px;
+      border-radius: var(--border-radius-md);
+      border: 0.5px solid var(--color-border-primary);
+      background: var(--color-background-primary);
+      cursor: pointer;
+      font-size: 12.5px;
+      color: var(--color-text-secondary);
+      transition: all 0.12s;
+      text-align: left;
+    }
+
+    .role-btn i { font-size: 16px; flex-shrink: 0; }
+
+    .role-btn:hover {
+      background: var(--color-background-secondary);
+      border-color: var(--color-border-secondary);
+      color: var(--color-text-primary);
+    }
+
+    .role-btn.selected {
+      background: var(--color-background-info);
+      border-color: var(--color-accent);
+      color: var(--color-text-info);
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 14px; }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--color-text-tertiary);
+      pointer-events: none;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 8px 10px 8px 34px;
+      border: 0.5px solid var(--color-border-secondary);
+      border-radius: var(--border-radius-md);
+      font-size: 13px;
+      color: var(--color-text-primary);
+      background: var(--color-background-primary);
+      outline: none;
+      transition: border-color 0.12s;
+    }
+
+    .field input::placeholder { color: var(--color-text-tertiary); }
+
+    .field input:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+    }
+
+    /* ── Password Requirements List ── */
+    .requirements {
+      margin-top: 6px;
+      margin-bottom: 14px;
+      font-size: 11.5px;
+      color: var(--color-text-secondary);
+      list-style: none;
+      padding-left: 2px;
+    }
+
+    .requirements li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      color: var(--color-text-tertiary);
+    }
+
+    .requirements li i {
+      font-size: 12px;
+    }
+
+    .requirements li.valid {
+      color: var(--color-text-success);
+    }
+
+    .requirements li.valid i::before {
+      content: "\ea5e"; /* Tabler Check icon */
+    }
+
+    /* ── Error & Success message ── */
+    .message-box {
+      display: none;
+      font-size: 12px;
+      border-radius: var(--border-radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 14px;
+    }
+
+    .message-box.error {
+      display: block;
+      color: var(--color-text-danger);
+      background: var(--color-background-danger);
+    }
+
+    .message-box.success {
+      display: block;
+      color: var(--color-text-success);
+      background: var(--color-background-success);
+    }
+
+    /* ── Buttons ── */
+    .btn-signup {
+      width: 100%;
+      padding: 9px;
+      background: var(--color-accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius-md);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.12s;
+    }
+
+    .btn-signup:hover { opacity: 0.9; }
+    
+    .login-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--color-text-info);
+      text-decoration: none;
+    }
+    
+    .login-link:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    .card-footer {
+      padding: 12px 20px;
+      border-top: 0.5px solid var(--color-border-tertiary);
+      font-size: 11.5px;
+      color: var(--color-text-tertiary);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <div class="logo-icon"><i class="ti ti-headset"></i></div>
+    <div class="logo-text">
+      <div class="name">Reception 360</div>
+      <div class="sub">Riverside Family Health</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="card-body">
+    <p class="heading">Create Account</p>
+    <p class="subheading">Set up your credentials to access the console.</p>
+
+    <!-- Role selector -->
+    <span class="role-label">I am registering as…</span>
+    <div class="role-grid">
+      <button class="role-btn" data-role="admin" onclick="selectRole(this)">
+        <i class="ti ti-shield-check"></i> Admin
+      </button>
+      <button class="role-btn" data-role="front_desk" onclick="selectRole(this)">
+        <i class="ti ti-headset"></i> Front desk
+      </button>
+      <button class="role-btn" data-role="provider" onclick="selectRole(this)">
+        <i class="ti ti-stethoscope"></i> Doctor
+      </button>
+      <button class="role-btn" data-role="patient" onclick="selectRole(this)">
+        <i class="ti ti-user"></i> Patient
+      </button>
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <label for="email">Email</label>
+      <div class="input-wrap">
+        <i class="ti ti-mail"></i>
+        <input id="email" type="email" placeholder="you@clinic.com" autocomplete="email" />
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <i class="ti ti-lock"></i>
+        <input id="password" type="password" placeholder="••••••••" autocomplete="new-password" oninput="validatePassword()" />
+      </div>
+    </div>
+
+    <!-- Password Requirements Tracker -->
+    <ul class="requirements">
+      <li id="req-length"><i class="ti ti-circle-x"></i> At least 7 characters long</li>
+      <li id="req-letter"><i class="ti ti-circle-x"></i> Includes at least one letter</li>
+      <li id="req-number"><i class="ti ti-circle-x"></i> Includes at least one number</li>
+      <li id="req-capital"><i class="ti ti-circle-x"></i> Includes one capital (uppercase) letter</li>
+    </ul>
+
+    <!-- Messages -->
+    <div class="message-box" id="message-box"></div>
+
+    <!-- Submit -->
+    <button class="btn-signup" onclick="handleSignup()">Sign up</button>
+    
+    <a href="login.html" class="login-link">Already have an account? Sign in</a>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">FrontDesk AI · staff registration</div>
+
+</div>
+
+<script>
+  let selectedRole = null;
+
+  function selectRole(btn) {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedRole = btn.dataset.role;
+  }
+
+  // Live Password Checklist validation
+  function validatePassword() {
+    const password = document.getElementById('password').value;
+    
+    const conditions = {
+      length: password.length >= 7,
+      letter: /[a-zA-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      capital: /[A-Z]/.test(password)
+    };
+
+    updateRequirementUI('req-length', conditions.length);
+    updateRequirementUI('req-letter', conditions.letter);
+    updateRequirementUI('req-number', conditions.number);
+    updateRequirementUI('req-capital', conditions.capital);
+
+    return conditions.length && conditions.letter && conditions.number && conditions.capital;
+  }
+
+  function updateRequirementUI(elementId, isValid) {
+    const element = document.getElementById(elementId);
+    const icon = element.querySelector('i');
+    
+    if (isValid) {
+      element.classList.add('valid');
+      icon.className = 'ti ti-checkbox';
+    } else {
+      element.classList.remove('valid');
+      icon.className = 'ti ti-circle-x';
+    }
+  }
+
+  function handleSignup() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const msgBox = document.getElementById('message-box');
+
+    // 1. Check if all basic fields are filled
+    if (!selectedRole || !email || !password) {
+      showMessage('Please select a role and fill in all fields.', 'error');
+      return;
+    }
+
+    // 2. Email format validation
+    if (!email.includes('@')) {
+      showMessage('Please enter a valid email address.', 'error');
+      return;
+    }
+
+    // 3. Strict password rules validation
+    if (!validatePassword()) {
+      showMessage('Please make sure your password meets all requirements.', 'error');
+      return;
+    }
+
+    // --- Local Database Simulation via localStorage ---
+    // Get existing users or start a fresh array
+    let database = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Check if the email is already registered
+    const userExists = database.some(user => user.email.toLowerCase() === email.toLowerCase());
+    if (userExists) {
+      showMessage('An account with this email already exists.', 'error');
+      return;
+    }
+
+    // Add new user to our simulation database
+    database.push({
+      role: selectedRole,
+      email: email,
+      password: password
+    });
+
+    // Save updated database back to localStorage
+    localStorage.setItem('users', JSON.stringify(database));
+
+    showMessage('Account created successfully! Redirecting...', 'success');
+
+    // Redirect to login page after 1.5 seconds
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1500);
+  }
+
+  function showMessage(text, type) {
+    const msgBox = document.getElementById('message-box');
+    msgBox.textContent = text;
+    msgBox.className = `message-box ${type}`;
+  }
+
+  // Allow pressing Enter to submit
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSignup();
+  });
+</script>
+
+</body>
+</html>
