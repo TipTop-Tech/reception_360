@@ -28,6 +28,7 @@ from pipecat.transports.network.fastapi_websocket import (
 from pipecat.vad.silero import SileroVADAnalyzer
 from pipecat.audio.vad.vad_analyzer import VADParams
 from calendar_tools import check_availability, book_appointment, cancel_appointment
+from db import save_call, save_transcript, update_call_outcome
 
 load_dotenv()
 
@@ -314,13 +315,27 @@ async def run_bot(websocket_client, stream_sid):
         ),
     )
 
+    call_id = None
+    call_start_time = None
+
     @transport.event_handler("on_client_connected")
     async def on_client_connected(transport, client):
+        nonlocal call_id, call_start_time
+        call_start_time = datetime.now()
+        call_id = await save_call(
+            caller_phone=stream_sid,
+            direction="inbound"
+        )
         messages.append({"role": "user", "content": "Say hello and introduce yourself briefly."})
         await task.queue_frames([LLMMessagesFrame(messages)])
 
     @transport.event_handler("on_client_disconnected")
     async def on_client_disconnected(transport, client):
+        if call_id:
+            duration = int((datetime.now() - call_start_time).total_seconds()) if call_start_time else 0
+            await save_transcript(call_id, messages)
+            await update_call_outcome(call_id, "info_only", duration)
+            logger.info(f"📊 Call {call_id} saved to database")
         await task.queue_frames([EndFrame()])
 
     runner = PipelineRunner(handle_sigint=False)
