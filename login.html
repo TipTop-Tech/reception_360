@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FrontDesk AI — Sign in</title>
+  <title>Reception 360 — Sign in</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <style>
 
@@ -244,6 +244,15 @@
       </button>
     </div>
 
+    <!-- Organization -->
+    <div class="field">
+      <label for="organization">Organization</label>
+      <div class="input-wrap">
+        <i class="ti ti-building"></i>
+        <input id="organization" type="text" placeholder="Riverside Family Health" autocomplete="organization" />
+      </div>
+    </div>
+
     <!-- Email -->
     <div class="field">
       <label for="email">Email</label>
@@ -271,7 +280,7 @@
   </div>
 
   <!-- Footer -->
-  <div class="card-footer">FrontDesk AI · staff access only</div>
+  <div class="card-footer">Reception 360 · Sign in</div>
 
 </div>
 
@@ -284,9 +293,12 @@
     selectedRole = btn.dataset.role;
   }
 
+
+
   function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const organization = document.getElementById('organization').value.trim();
     const errorEl = document.getElementById('error-msg');
 
     // Basic validation
@@ -308,7 +320,8 @@
     const matchedUser = database.find(user => 
       user.email.toLowerCase() === email.toLowerCase() && 
       user.password === password && 
-      user.role === selectedRole
+      user.role === selectedRole &&
+      user.organization.toLowerCase() === organization.toLowerCase()
     );
 
     // If no match is found, block them!

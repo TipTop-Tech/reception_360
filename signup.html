@@ -291,6 +291,15 @@
       </button>
     </div>
 
+    <!-- Organization -->
+    <div class="field">
+        <label for="organization">Organization</label>
+        <div class="input-wrap">
+          <i class="ti ti-building"></i>
+          <input id="organization" type="text" placeholder="Riverside Family Health" autocomplete="organization" />
+        </div>
+      </div>
+
     <!-- Email -->
     <div class="field">
       <label for="email">Email</label>
@@ -327,7 +336,7 @@
   </div>
 
   <!-- Footer -->
-  <div class="card-footer">FrontDesk AI · staff registration</div>
+  <div class="card-footer">Reception 360 · registration</div>
 
 </div>
 
@@ -376,6 +385,7 @@
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const msgBox = document.getElementById('message-box');
+    const organization = document.getElementById('organization').value.trim();
 
     // 1. Check if all basic fields are filled
     if (!selectedRole || !email || !password) {
@@ -410,7 +420,8 @@
     database.push({
       role: selectedRole,
       email: email,
-      password: password
+      password: password,
+      organization: organization
     });
 
     // Save updated database back to localStorage
