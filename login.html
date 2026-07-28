@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FrontDesk AI — Sign in</title>
+  <title>Reception 360 — Log in</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <style>
 
@@ -182,8 +182,8 @@
 
     .error-msg.visible { display: block; }
 
-    /* ── Sign in button ── */
-    .btn-signin {
+    /* ── Log in button ── */
+    .btn-login {
       width: 100%;
       padding: 9px;
       background: var(--color-accent);
@@ -196,8 +196,8 @@
       transition: opacity 0.12s;
     }
 
-    .btn-signin:hover { opacity: 0.9; }
-    .btn-signin:active { opacity: 0.8; }
+    .btn-login:hover { opacity: 0.9; }
+    .btn-login:active { opacity: 0.8; }
 
     /* ── Footer ── */
     .card-footer {
@@ -224,7 +224,7 @@
 
   <!-- Body -->
   <div class="card-body">
-    <p class="heading">Sign in</p>
+    <p class="heading">Log in</p>
     <p class="subheading">Choose your role and enter your credentials.</p>
 
     <!-- Role selector -->
@@ -242,6 +242,15 @@
       <button class="role-btn" data-role="patient" onclick="selectRole(this)">
         <i class="ti ti-user"></i> Patient
       </button>
+    </div>
+
+    <!-- Organization -->
+    <div class="field">
+      <label for="organization">Organization</label>
+      <div class="input-wrap">
+        <i class="ti ti-building"></i>
+        <input id="organization" type="text" placeholder="Riverside Family Health" autocomplete="organization" />
+      </div>
     </div>
 
     <!-- Email -->
@@ -266,12 +275,12 @@
     <div class="error-msg" id="error-msg">Please select a role, enter your email and password.</div>
 
     <!-- Submit -->
-    <button class="btn-signin" onclick="handleLogin()">Sign in</button>
+    <button class="btn-login" onclick="handleLogin()">Log in</button>
     <a href="signup.html" style="display: block; text-align: center; margin-top: 14px; font-size: 12px; color: var(--color-text-info); text-decoration: none;">Don't have an account? Sign up</a>
   </div>
 
   <!-- Footer -->
-  <div class="card-footer">FrontDesk AI · staff access only</div>
+  <div class="card-footer">Reception 360 · Log in</div>
 
 </div>
 
@@ -284,9 +293,12 @@
     selectedRole = btn.dataset.role;
   }
 
+
+
   function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const organization = document.getElementById('organization').value.trim();
     const errorEl = document.getElementById('error-msg');
 
     // Basic validation
@@ -308,7 +320,8 @@
     const matchedUser = database.find(user => 
       user.email.toLowerCase() === email.toLowerCase() && 
       user.password === password && 
-      user.role === selectedRole
+      user.role === selectedRole &&
+      user.organization.toLowerCase() === organization.toLowerCase()
     );
 
     // If no match is found, block them!
