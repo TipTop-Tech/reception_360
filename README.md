@@ -1,12 +1,11 @@
 # reception_360
 
 An AI-powered voice receptionist that answers phone calls, books appointments, and
-handles front-desk questions for a dental clinic — entirely over the phone, in natural
+handles front-desk questions for a dental clinic - entirely over the phone, in natural
 conversation.
 
 A caller dials a Twilio number, and reception_360 picks up: it understands speech,
-answers questions about hours, location, services, providers, and insurance, checks a
-real Google Calendar for availability, books / reschedules / cancels appointments, and
+answers questions about hours, location, services, providers, and insurance, checks for availability, books / reschedules / cancels appointments, and
 texts a confirmation — all in a back-and-forth voice conversation. It also follows an
 emergency protocol that interrupts everything else if a caller describes a medical
 emergency.
