@@ -217,7 +217,7 @@ TOOLS = [
 ]
 
 
-async def run_bot(websocket_client, stream_sid):
+async def run_bot(websocket_client, stream_sid, caller_phone):
     transport = FastAPIWebsocketTransport(
         websocket=websocket_client,
         params=FastAPIWebsocketParams(
@@ -323,7 +323,7 @@ async def run_bot(websocket_client, stream_sid):
         nonlocal call_id, call_start_time
         call_start_time = datetime.now()
         call_id = await save_call(
-            caller_phone=stream_sid,
+            caller_phone=caller_phone,
             direction="inbound"
         )
         messages.append({"role": "user", "content": "Say hello and introduce yourself briefly."})
