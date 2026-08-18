@@ -230,13 +230,39 @@ body{
   <div class="topbar" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:0.5px solid var(--color-border-tertiary);">
     <div style="width:28px;height:28px;border-radius:var(--border-radius-md);background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;"><i class="ti ti-headset" style="font-size:17px;" aria-hidden="true"></i></div>
     <div style="line-height:1.15;">
-      <div class="brandname" style="font-size:13.5px;font-weight:500;color:var(--color-text-primary);">FrontDesk AI</div>
-      <div style="font-size:11.5px;color:var(--color-text-tertiary);">Riverside Family Health</div>
+      <div id="brand-name" class="brandname" style="font-size:13.5px;font-weight:500;color:var(--color-text-primary);">Reception 360</div>
+      <div id="brand-organization" style="font-size:11.5px;color:var(--color-text-tertiary);">Demo Clinic</div>
     </div>
     <div style="flex:1;"></div>
     <div style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:130px;"><i class="ti ti-search" style="font-size:15px;" aria-hidden="true"></i>Search patients…</div>
     <i class="ti ti-bell" style="font-size:18px;color:var(--color-text-secondary);" aria-hidden="true"></i>
-    <div style="width:28px;height:28px;border-radius:50%;background:var(--color-background-secondary);color:var(--color-text-secondary);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:500;">JL</div>
+    <div id="profile-menu-toggle" style="position:relative;cursor:pointer;">
+      <div id="user-avatar" style="width:28px;height:28px;border-radius:50%;background:var(--brand-orange);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;letter-spacing:0.02em;">--</div>
+      <div id="profile-menu" style="position:absolute;right:0;top:38px;width:200px;background:white;border:1px solid var(--color-border-tertiary);border-radius:12px;box-shadow:0 12px 28px rgba(13,35,46,0.12);padding:8px;display:none;z-index:50;">
+        <button id="profile-menu-item" type="button" style="width:100%;border:none;background:transparent;padding:8px 10px;border-radius:8px;text-align:left;font-size:12px;color:#111827;cursor:pointer;font-weight:600;">Profile</button>
+      </div>
+    </div>
+    <div id="profile-panel" style="position:fixed;inset:0;background:rgba(17,24,39,0.25);display:none;align-items:center;justify-content:center;z-index:100;">
+      <div style="width:min(380px, calc(100vw - 24px));background:white;border-radius:16px;border:1px solid var(--color-border-tertiary);box-shadow:0 16px 42px rgba(13,35,46,0.18);padding:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="font-size:15px;font-weight:700;color:#111827;">Profile</div>
+          <button id="profile-close" type="button" style="border:none;background:transparent;color:#111827;font-size:18px;cursor:pointer;font-weight:600;">×</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div id="profile-avatar-large" style="width:42px;height:42px;border-radius:50%;background:var(--brand-orange);color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:0.02em;">--</div>
+          <div>
+            <div id="profile-name" style="font-weight:700;color:#111827;font-size:14px;">User</div>
+            <div id="profile-role" style="font-size:12px;color:#111827;">frontdesk</div>
+          </div>
+        </div>
+        <div style="display:grid;gap:10px;font-size:12.5px;">
+          <div><div style="color:#374151;margin-bottom:3px;font-weight:600;">Name</div><div id="profile-detail-name" style="color:#111827;font-weight:600;">—</div></div>
+          <div><div style="color:#374151;margin-bottom:3px;font-weight:600;">Email</div><div id="profile-email" style="color:#111827;font-weight:600;">—</div></div>
+          <div><div style="color:#374151;margin-bottom:3px;font-weight:600;">Logged in as</div><div id="profile-role-detail" style="color:#111827;font-weight:600;">—</div></div>
+          <div><div style="color:#374151;margin-bottom:3px;font-weight:600;">Organization</div><div id="profile-organization" style="color:#111827;font-weight:600;">—</div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="appbody" style="display:flex;">
@@ -256,49 +282,25 @@ body{
       <div class="view" id="v-dashboard">
         <p class="vtitle">Dashboard</p>
         <p class="vsub">Good morning, Jordan · Tuesday, June 16 — the front desk at a glance.</p>
-        <div class="kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px;">
-          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Calls today</div><div style="font-size:24px;font-weight:500;">42</div></div>
-          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Appointments</div><div style="font-size:24px;font-weight:500;">28</div></div>
-          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">No-show rate</div><div style="font-size:24px;font-weight:500;">6.2%</div></div>
-          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Eligibility verified</div><div style="font-size:24px;font-weight:500;">94%</div></div>
+        <div class="kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;">
+          <div id="kpi-calls-today" style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Calls today</div><div style="font-size:24px;font-weight:500;">0</div></div>
+          <div id="kpi-appointments" style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;"><div style="font-size:12px;color:var(--color-text-secondary);">Appointments</div><div style="font-size:24px;font-weight:500;">0</div></div>
         </div>
         <p style="font-size:13px;font-weight:500;margin:0 0 8px;">Recent calls</p>
         <table class="dtab">
           <colgroup><col style="width:16%"><col style="width:38%"><col style="width:24%"><col style="width:22%"></colgroup>
           <thead><tr><th>Time</th><th>Caller</th><th>Outcome</th><th>Duration</th></tr></thead>
-          <tbody>
-            <tr><td>9:42a</td><td class="ccell"><div class="nm">Maria Alvarez</div><div class="mt">(201) 555-0148</div></td><td><span class="badge b-s">Booked</span></td><td>3:12</td></tr>
-            <tr><td>9:15a</td><td class="ccell"><div class="nm">Tom Becker</div><div class="mt">(973) 555-0210</div></td><td><span class="badge b-w">Transferred</span></td><td>1:48</td></tr>
-            <tr><td>8:53a</td><td class="ccell"><div class="nm">Unknown caller</div><div class="mt">(862) 555-0177</div></td><td><span class="badge b-n">Voicemail</span></td><td>0:22</td></tr>
-          </tbody>
+          <tbody id="recent-calls-body"></tbody>
         </table>
       </div>
 
       <div class="view" id="v-calls" style="display:none;">
         <p class="vtitle">Call logs</p>
-        <p class="vsub">Caller contact, outcome, and full transcript — open the document icon on any row.</p>
+        <p class="vsub">Real call records from the Twilio-backed app and recent activity logs.</p>
         <table class="dtab">
           <colgroup><col style="width:10%"><col style="width:30%"><col style="width:16%"><col style="width:8%"><col style="width:27%"><col style="width:9%"></colgroup>
           <thead><tr><th>Time</th><th>Caller</th><th>Outcome</th><th>Len</th><th>Result</th><th style="text-align:center;"><i class="ti ti-file-text" aria-label="Transcript"></i></th></tr></thead>
-          <tbody>
-            <tr><td>9:42a</td><td class="ccell"><div class="nm">Maria Alvarez</div><div class="mt">(201) 555-0148</div><div class="mt">m.alvarez@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>3:12</td><td>Jun 18, 10:30 · Dr. Patel</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · Thanks for calling Riverside Family Health, how can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I'd like to book an appointment — I've had a cough for about two weeks.</div><div class="tline"><span class="tspk-a">Agent</span> · I can help with that. Are you an existing patient?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, Maria Alvarez.</div><div class="tline"><span class="tspk-a">Agent</span> · Dr. Patel has an opening June 18 at 10:30 — does that work?</div><div class="tline"><span class="tspk-c">Caller</span> · That's perfect.</div><div class="tline"><span class="tspk-a">Agent</span> · Booked. I'll text a secure link so you can add your insurance card.</div></td></tr>
-
-            <tr><td>9:15a</td><td class="ccell"><div class="nm">Tom Becker</div><div class="mt">(973) 555-0210</div></td><td><span class="badge b-w">Transferred</span></td><td>1:48</td><td>To front desk</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help today?</div><div class="tline"><span class="tspk-c">Caller</span> · I have a question about my last bill.</div><div class="tline"><span class="tspk-a">Agent</span> · Billing is handled by our front desk — let me transfer you now.</div><div class="tline"><span class="tspk-c">Caller</span> · Okay, thank you.</div></td></tr>
-
-            <tr><td>8:53a</td><td class="ccell"><div class="nm">Unknown caller</div><div class="mt">(862) 555-0177</div></td><td><span class="badge b-n">Voicemail</span></td><td>0:22</td><td>—</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · You've reached Riverside Family Health after hours. Please leave a message.</div><div class="tline"><span class="tspk-c">Caller</span> · Hi, I need to move my appointment next week — please call me back. (22s)</div></td></tr>
-
-            <tr><td>8:30a</td><td class="ccell"><div class="nm">Dana Wu</div><div class="mt">(201) 555-0263</div><div class="mt">d.wu@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>2:41</td><td>Jun 19, 14:00 · Dr. Kim</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I need to see a dermatologist about a rash.</div><div class="tline"><span class="tspk-a">Agent</span> · Dr. Kim has June 19 at 2:00 PM available — shall I book it?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, let's do that.</div><div class="tline"><span class="tspk-a">Agent</span> · Booked, you're all set.</div></td></tr>
-
-            <tr><td>8:11a</td><td class="ccell"><div class="nm">Raj Mehta</div><div class="mt">(908) 555-0319</div></td><td><span class="badge b-i">Rescheduled</span></td><td>1:55</td><td>Jun 20 → Jun 25</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help?</div><div class="tline"><span class="tspk-c">Caller</span> · I need to move my June 20 appointment.</div><div class="tline"><span class="tspk-a">Agent</span> · I can move it to June 25 at the same time — does that work?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes please.</div><div class="tline"><span class="tspk-a">Agent</span> · Done — rescheduled to June 25.</div></td></tr>
-
-            <tr><td>7:58a</td><td class="ccell"><div class="nm">Helen Cho</div><div class="mt">(551) 555-0288</div><div class="mt">h.cho@email.com</div></td><td><span class="badge b-s">Booked</span></td><td>4:03</td><td>Jun 17, 09:15 · Dr. Osei</td><td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td></tr>
-            <tr class="trow" style="display:none;"><td colspan="6"><div class="tline"><span class="tspk-a">Agent</span> · How can I help today?</div><div class="tline"><span class="tspk-c">Caller</span> · I'd like a cardiology follow-up with Dr. Osei.</div><div class="tline"><span class="tspk-a">Agent</span> · She has June 17 at 9:15 AM. I'll note this needs a referral on file — do you have one?</div><div class="tline"><span class="tspk-c">Caller</span> · Yes, from my primary care doctor.</div><div class="tline"><span class="tspk-a">Agent</span> · Great — booked for June 17 at 9:15.</div></td></tr>
-          </tbody>
+          <tbody id="call-log-body"></tbody>
         </table>
       </div>
 
@@ -469,11 +471,212 @@ body{
   }
   items.forEach(function(i){i.addEventListener('click',function(){show(i.dataset.view);});});
   show('dashboard');
-  var tbtns=[].slice.call(document.querySelectorAll('.tbtn'));
-  tbtns.forEach(function(b){b.addEventListener('click',function(){
-    var tr=b.closest('tr'); var d=tr.nextElementSibling;
-    if(d&&d.classList.contains('trow')){d.style.display=(d.style.display==='table-row')?'none':'table-row';}
-  });});
+  function formatDuration(seconds){
+    seconds = Number(seconds || 0);
+    if (seconds <= 0) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${String(secs).padStart(2,'0')}`;
+  }
+
+  function formatTime(epoch){
+    if (!epoch) return '—';
+    const d = new Date(Number(epoch) * 1000);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function outcomeBadge(outcome){
+    const text = (outcome || 'completed').toString().toLowerCase();
+    if (text.includes('book')) return '<span class="badge b-s">Booked</span>';
+    if (text.includes('transfer')) return '<span class="badge b-w">Transferred</span>';
+    if (text.includes('voicemail')) return '<span class="badge b-n">Voicemail</span>';
+    if (text.includes('cancel')) return '<span class="badge b-d">Cancelled</span>';
+    if (text.includes('resched')) return '<span class="badge b-i">Rescheduled</span>';
+    return '<span class="badge b-s">Connected</span>';
+  }
+
+  async function loadCurrentUser(){
+    try {
+      const response = await fetch('/api/me', { credentials: 'same-origin' });
+      if (!response.ok) {
+        return;
+      }
+      const user = await response.json();
+      const fullName = user.name || 'User';
+      const initials = fullName.split(/\s+/).filter(Boolean).slice(0,2).map(part => part[0].toUpperCase()).join('') || 'U';
+      const cleanRole = (user.role || 'frontdesk').toString().toLowerCase().replace(/[_-]/g, ' ').trim();
+      const displayRole = cleanRole === 'front desk' ? 'frontdesk' : cleanRole;
+      const avatar = document.getElementById('user-avatar');
+      const avatarLarge = document.getElementById('profile-avatar-large');
+      const nameEl = document.getElementById('profile-name');
+      const roleEl = document.getElementById('profile-role');
+      const emailEl = document.getElementById('profile-email');
+      const roleDetailEl = document.getElementById('profile-role-detail');
+      const orgEl = document.getElementById('profile-organization');
+      const detailNameEl = document.getElementById('profile-detail-name');
+      const brandNameEl = document.getElementById('brand-name');
+      const brandOrgEl = document.getElementById('brand-organization');
+
+      if (avatar) avatar.textContent = initials;
+      if (avatarLarge) avatarLarge.textContent = initials;
+      if (nameEl) nameEl.textContent = fullName;
+      if (roleEl) roleEl.textContent = displayRole;
+      if (emailEl) emailEl.textContent = user.email || '—';
+      if (roleDetailEl) roleDetailEl.textContent = displayRole;
+      if (orgEl) orgEl.textContent = user.organization || '—';
+      if (detailNameEl) detailNameEl.textContent = fullName;
+      if (brandNameEl) brandNameEl.textContent = 'Reception 360';
+      if (brandOrgEl) brandOrgEl.textContent = user.organization || 'Demo Clinic';
+    } catch (error) {
+      console.warn('Unable to load current user:', error);
+    }
+  }
+
+  async function loadCallLogs(){
+    try {
+      const response = await fetch('/api/dashboard/calls', { credentials: 'same-origin' });
+      if (!response.ok) {
+        throw new Error('Not authenticated');
+      }
+      const calls = await response.json();
+      const recentBody = document.getElementById('recent-calls-body');
+      const fullBody = document.getElementById('call-log-body');
+
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayStartUnix = Math.floor(todayStart.getTime() / 1000);
+
+      const todaysCalls = (calls || []).filter(call => Number(call.created_at) >= todayStartUnix).length;
+      const bookedAppointments = (calls || []).filter(call => {
+        const outcome = (call.outcome || '').toLowerCase();
+        return outcome.includes('book') || outcome.includes('appointment') || outcome.includes('confirm');
+      }).length;
+
+      const callsTodayEl = document.getElementById('kpi-calls-today');
+      const appointmentsEl = document.getElementById('kpi-appointments');
+      if (callsTodayEl) {
+        callsTodayEl.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary);">Calls today</div><div style="font-size:24px;font-weight:500;">' + todaysCalls + '</div>';
+      }
+      if (appointmentsEl) {
+        appointmentsEl.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary);">Appointments</div><div style="font-size:24px;font-weight:500;">' + bookedAppointments + '</div>';
+      }
+
+      const recentRows = (calls || []).slice(0, 3).map(call => {
+        const callName = call.caller_name || 'Unknown caller';
+        const phone = call.phone || 'Unknown';
+        return `
+          <tr>
+            <td>${formatTime(call.created_at)}</td>
+            <td class="ccell"><div class="nm">${callName}</div><div class="mt">${phone}</div></td>
+            <td>${outcomeBadge(call.outcome)}</td>
+            <td>${formatDuration(call.duration_seconds)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const fullRows = (calls || []).map(call => {
+        const callName = call.caller_name || 'Unknown caller';
+        const phone = call.phone || 'Unknown';
+        const transcript = (call.transcript || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `
+          <tr>
+            <td>${formatTime(call.created_at)}</td>
+            <td class="ccell"><div class="nm">${callName}</div><div class="mt">${phone}</div></td>
+            <td>${outcomeBadge(call.outcome)}</td>
+            <td>${formatDuration(call.duration_seconds)}</td>
+            <td>${call.outcome || 'Connected'}</td>
+            <td style="text-align:center;"><span class="tbtn" aria-label="View transcript"><i class="ti ti-file-text" style="font-size:16px;"></i></span></td>
+          </tr>
+          <tr class="trow" style="display:none;">
+            <td colspan="6"><div class="tline">${transcript || 'No transcript captured yet.'}</div></td>
+          </tr>
+        `;
+      }).join('');
+
+      if (recentBody) recentBody.innerHTML = recentRows || '<tr><td colspan="4">No calls logged yet.</td></tr>';
+      if (fullBody) fullBody.innerHTML = fullRows || '<tr><td colspan="6">No calls logged yet.</td></tr>';
+
+      document.querySelectorAll('.tbtn').forEach(function(b){
+        b.addEventListener('click', function(){
+          var tr = b.closest('tr');
+          var d = tr && tr.nextElementSibling;
+          if (d && d.classList.contains('trow')) {
+            d.style.display = (d.style.display === 'table-row') ? 'none' : 'table-row';
+          }
+        });
+      });
+    } catch (error) {
+      console.error('Error loading call logs:', error);
+      if (document.getElementById('recent-calls-body')) {
+        document.getElementById('recent-calls-body').innerHTML = '<tr><td colspan="4">Unable to load call data.</td></tr>';
+      }
+      if (document.getElementById('call-log-body')) {
+        document.getElementById('call-log-body').innerHTML = '<tr><td colspan="6">Unable to load call data.</td></tr>';
+      }
+    }
+  }
+
+  const signOutButton = document.querySelector('.navitem:last-child');
+  if (signOutButton) {
+    signOutButton.addEventListener('click', async function () {
+      try {
+        await fetch('/api/logout', {
+          method: 'POST',
+          credentials: 'same-origin'
+        });
+      } catch (error) {
+        console.warn('Logout request failed:', error);
+      } finally {
+        window.location.href = '/login.html';
+      }
+    });
+  }
+
+  const profileToggle = document.getElementById('profile-menu-toggle');
+  const profileMenu = document.getElementById('profile-menu');
+  const profilePanel = document.getElementById('profile-panel');
+  const profileMenuItem = document.getElementById('profile-menu-item');
+  const profileClose = document.getElementById('profile-close');
+
+  if (profileToggle && profileMenu) {
+    profileToggle.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const isVisible = profileMenu.style.display === 'block';
+      profileMenu.style.display = isVisible ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!profileToggle.contains(event.target)) {
+        profileMenu.style.display = 'none';
+      }
+    });
+  }
+
+  if (profileMenuItem) {
+    profileMenuItem.addEventListener('click', function () {
+      profileMenu.style.display = 'none';
+      if (profilePanel) {
+        profilePanel.style.display = 'flex';
+      }
+    });
+  }
+
+  if (profileClose && profilePanel) {
+    profileClose.addEventListener('click', function () {
+      profilePanel.style.display = 'none';
+    });
+  }
+
+  if (profilePanel) {
+    profilePanel.addEventListener('click', function (event) {
+      if (event.target === profilePanel) {
+        profilePanel.style.display = 'none';
+      }
+    });
+  }
+
+  loadCurrentUser();
+  loadCallLogs();
 })();
 </script></div>
 </body>

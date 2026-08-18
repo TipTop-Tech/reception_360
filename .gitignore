@@ -3,6 +3,7 @@
 .env
 google_credentials.json
 google_token.json
+reception360.db
 __pycache__/
 *.pyc.venv/
 *.pyc

@@ -295,14 +295,13 @@
 
 
 
-  function handleLogin() {
+  async function handleLogin() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     const organization = document.getElementById('organization').value.trim();
     const errorEl = document.getElementById('error-msg');
 
-    // Basic validation
-    if (!selectedRole || !email || !password) {
+    if (!selectedRole || !email || !password || !organization) {
       errorEl.textContent = 'Please select a role and fill in all fields.';
       errorEl.classList.add('visible');
       return;
@@ -314,28 +313,30 @@
       return;
     }
 
-    const database = JSON.parse(localStorage.getItem('users')) || [];
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          organization,
+          email,
+          password,
+          role: selectedRole,
+        })
+      });
 
-    // Look for a user that matches the exact email, password, AND role
-    const matchedUser = database.find(user => 
-      user.email.toLowerCase() === email.toLowerCase() && 
-      user.password === password && 
-      user.role === selectedRole &&
-      user.organization.toLowerCase() === organization.toLowerCase()
-    );
+      const data = await response.json();
 
-    // If no match is found, block them!
-    if (!matchedUser) {
-      errorEl.textContent = 'Invalid credentials or incorrect role selected.';
+      if (!response.ok) {
+        throw new Error(data.detail || 'Invalid credentials.');
+      }
+
+      errorEl.classList.remove('visible');
+      window.location.href = 'staff_admin_console_dashboard_3.html';
+    } catch (error) {
+      errorEl.textContent = error.message || 'Something went wrong.';
       errorEl.classList.add('visible');
-      return;
     }
-
-    errorEl.classList.remove('visible');
-
-    // For now redirect everyone to the dashboard
-    // Later each role can go to its own page
-    window.location.href = 'staff_admin_console_dashboard_3.html';
   }
 
   // Allow pressing Enter to submit

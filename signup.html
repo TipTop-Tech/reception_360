@@ -291,6 +291,15 @@
       </button>
     </div>
 
+    <!-- Full Name -->
+    <div class="field">
+      <label for="name">Full name</label>
+      <div class="input-wrap">
+        <i class="ti ti-user-circle"></i>
+        <input id="name" type="text" placeholder="Shreyashri Athani" autocomplete="name" />
+      </div>
+    </div>
+
     <!-- Organization -->
     <div class="field">
         <label for="organization">Organization</label>
@@ -381,58 +390,53 @@
     }
   }
 
-  function handleSignup() {
+  async function handleSignup() {
+    const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const msgBox = document.getElementById('message-box');
     const organization = document.getElementById('organization').value.trim();
 
-    // 1. Check if all basic fields are filled
-    if (!selectedRole || !email || !password) {
-      showMessage('Please select a role and fill in all fields.', 'error');
+    if (!selectedRole || !name || !email || !password || !organization) {
+      showMessage('Please select a role and fill in all fields, including your full name.', 'error');
       return;
     }
 
-    // 2. Email format validation
     if (!email.includes('@')) {
       showMessage('Please enter a valid email address.', 'error');
       return;
     }
 
-    // 3. Strict password rules validation
     if (!validatePassword()) {
       showMessage('Please make sure your password meets all requirements.', 'error');
       return;
     }
 
-    // --- Local Database Simulation via localStorage ---
-    // Get existing users or start a fresh array
-    let database = JSON.parse(localStorage.getItem('users')) || [];
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          organization,
+          email,
+          password,
+          role: selectedRole,
+        })
+      });
 
-    // Check if the email is already registered
-    const userExists = database.some(user => user.email.toLowerCase() === email.toLowerCase());
-    if (userExists) {
-      showMessage('An account with this email already exists.', 'error');
-      return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Signup failed.');
+      }
+
+      showMessage('Account created successfully! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1500);
+    } catch (error) {
+      showMessage(error.message || 'Something went wrong during signup.', 'error');
     }
-
-    // Add new user to our simulation database
-    database.push({
-      role: selectedRole,
-      email: email,
-      password: password,
-      organization: organization
-    });
-
-    // Save updated database back to localStorage
-    localStorage.setItem('users', JSON.stringify(database));
-
-    showMessage('Account created successfully! Redirecting...', 'success');
-
-    // Redirect to login page after 1.5 seconds
-    setTimeout(() => {
-      window.location.href = 'login.html';
-    }, 1500);
   }
 
   function showMessage(text, type) {
