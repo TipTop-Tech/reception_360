@@ -12,3 +12,5 @@ services:
     # If your app needs a specific timezone (you use America/New_York in bot.py):
     environment:
       - TZ=America/New_York
+    volumes:
+      - ./reception360.db:/app/reception360.db
