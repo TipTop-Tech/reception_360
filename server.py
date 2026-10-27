@@ -1,6 +1,10 @@
 import hashlib
 import json
 import secrets
+import asyncio
+import os
+import smtplib
+from email.message import EmailMessage
 import sqlite3
 import time
 from pathlib import Path
@@ -14,6 +18,18 @@ from bot import run_bot
 DB_PATH = Path(__file__).with_name("reception360.db")
 SESSION_COOKIE = "reception360_session"
 SESSION_TTL_SECONDS = 60 * 60 * 24  # 24 hours
+
+# Password reset settings
+RESET_TOKEN_TTL_SECONDS = 60 * 30  # reset links expire after 30 minutes
+RESET_REQUEST_COOLDOWN_SECONDS = 60  # at most one reset email per minute per account
+PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "https://reception360.feeltiptop.com").rstrip("/")
+
+# Email (SMTP) settings. If SMTP_HOST is not set, reset links go to the server logs instead.
+SMTP_HOST = os.environ.get("SMTP_HOST", "")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USER = os.environ.get("SMTP_USER", "")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+SMTP_FROM = os.environ.get("SMTP_FROM", SMTP_USER)
 
 app = FastAPI()
 
@@ -88,6 +104,17 @@ def init_db() -> None:
             )
             """
         )
+        conn.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS password_resets (
+                        token_hash TEXT PRIMARY KEY,
+                        email TEXT NOT NULL,
+                        created_at INTEGER NOT NULL,
+                        expires_at INTEGER NOT NULL
+                    )
+                    """
+                )
+        
         conn.commit()
 
 
@@ -142,6 +169,68 @@ def create_session(email: str, role: str) -> str:
     return token
 
 
+
+def password_meets_requirements(password: str) -> bool:
+    return (
+        len(password) >= 7
+        and any(ch.isalpha() for ch in password)
+        and any(ch.isdigit() for ch in password)
+        and any(ch.isupper() for ch in password)
+    )
+
+
+def hash_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def create_password_reset(email: str) -> str | None:
+    """Create a reset token for this email. Returns None if one was sent very recently."""
+    now = int(time.time())
+    with get_db_connection() as conn:
+        recent = conn.execute(
+            "SELECT 1 FROM password_resets WHERE email = ? AND created_at > ?",
+            (email, now - RESET_REQUEST_COOLDOWN_SECONDS),
+        ).fetchone()
+        if recent:
+            return None
+
+        conn.execute("DELETE FROM password_resets WHERE email = ?", (email,))
+
+        token = secrets.token_urlsafe(32)
+        conn.execute(
+            "INSERT INTO password_resets (token_hash, email, created_at, expires_at) VALUES (?, ?, ?, ?)",
+            (hash_reset_token(token), email, now, now + RESET_TOKEN_TTL_SECONDS),
+        )
+        conn.commit()
+    return token
+
+
+def send_reset_email(to_email: str, name: str, reset_link: str) -> None:
+    if not SMTP_HOST:
+        logger.warning(f"SMTP not configured. Password reset link for {to_email}: {reset_link}")
+        return
+
+    msg = EmailMessage()
+    msg["Subject"] = "Reset your Reception 360 password"
+    msg["From"] = SMTP_FROM
+    msg["To"] = to_email
+    msg.set_content(
+        f"Hi {name or 'there'},\n\n"
+        "We received a request to reset your Reception 360 password. "
+        "Open the link below to choose a new one:\n\n"
+        f"{reset_link}\n\n"
+        f"This link expires in {RESET_TOKEN_TTL_SECONDS // 60} minutes and can only be used once.\n\n"
+        "If you didn't ask for this, you can ignore this email. Your password won't change.\n\n"
+        "Reception 360"
+    )
+
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as smtp:
+        smtp.starttls()
+        if SMTP_USER:
+            smtp.login(SMTP_USER, SMTP_PASSWORD)
+        smtp.send_message(msg)
+
+
 def log_call_event(direction: str, caller_name: str | None, phone: str | None, outcome: str, duration_seconds: int = 0, transcript: str | None = None) -> None:
     with get_db_connection() as conn:
         conn.execute(
@@ -159,6 +248,7 @@ def log_call_event(direction: str, caller_name: str | None, phone: str | None, o
                 int(time.time()),
             ),
         )
+
         conn.commit()
 
 
@@ -308,6 +398,88 @@ async def login_api(request: Request):
     )
     return response
 
+
+
+@app.get("/forgot-password.html")
+async def forgot_password_page():
+    return FileResponse("forgot-password.html")
+
+
+@app.get("/reset-password.html")
+async def reset_password_page():
+    return FileResponse("reset-password.html")
+
+
+@app.post("/api/forgot-password")
+async def forgot_password_api(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    email = (payload.get("email") or "").strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Please enter a valid email.")
+
+    # Same answer whether or not the account exists, so nobody can probe for emails.
+    generic_response = JSONResponse({
+        "ok": True,
+        "message": "If an account exists for that email, a reset link is on its way.",
+    })
+
+    user = get_user_by_email(email)
+    if user is None:
+        return generic_response
+
+    token = create_password_reset(email)
+    if token is None:
+        return generic_response
+
+    reset_link = f"{PUBLIC_BASE_URL}/reset-password.html?token={token}"
+    try:
+        await asyncio.to_thread(send_reset_email, email, user["name"], reset_link)
+    except Exception as exc:
+        logger.error(f"Failed to send password reset email to {email}: {exc}")
+
+    return generic_response
+
+
+@app.post("/api/reset-password")
+async def reset_password_api(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    token = (payload.get("token") or "").strip()
+    password = payload.get("password") or ""
+
+    if not token:
+        raise HTTPException(status_code=400, detail="This reset link is invalid. Please request a new one.")
+
+    if not password_meets_requirements(password):
+        raise HTTPException(status_code=400, detail="Password does not meet the required format.")
+
+    now = int(time.time())
+    with get_db_connection() as conn:
+        row = conn.execute(
+            "SELECT email FROM password_resets WHERE token_hash = ? AND expires_at > ?",
+            (hash_reset_token(token), now),
+        ).fetchone()
+        if row is None:
+            raise HTTPException(status_code=400, detail="This reset link is invalid or has expired. Please request a new one.")
+
+        email = row["email"]
+        salt, password_hash = hash_password(password)
+        conn.execute(
+            "UPDATE users SET password_salt = ?, password_hash = ? WHERE email = ?",
+            (salt, password_hash, email),
+        )
+        conn.execute("DELETE FROM password_resets WHERE email = ?", (email,))
+        conn.execute("DELETE FROM sessions WHERE email = ?", (email,))
+        conn.commit()
+
+    return JSONResponse({"ok": True, "message": "Your password has been reset. You can now log in."})
 
 @app.get("/api/me")
 async def current_user_api(request: Request):
